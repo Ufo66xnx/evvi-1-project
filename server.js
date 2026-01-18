@@ -30,17 +30,28 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
     password TEXT
 )`);
 
-// 4. РЕГИСТРАЦИЯ
+// 4. РЕГИСТРАЦИЯ (С валидацией)
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
 
+        if (password.length < 8) {
+            return res.status(400).json({ error: "Пароль должен быть не менее 8 символов" });
+        }
+
+        const forbiddenWords = ['admin', 'user'];
+        const isForbidden = forbiddenWords.some(word => username.toLowerCase().includes(word));
+        
+        if (isForbidden) {
+            return res.status(400).json({ error: "Логин содержит запрещенные слова" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
         db.run(
             `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
             [username, email, hashedPassword],
             function(err) {
-                if (err) return res.status(400).json({ error: "Ошибка: юзер существует" });
+                if (err) return res.status(400).json({ error: "Имя уже занято" });
                 res.json({ success: true });
             }
         );
@@ -75,47 +86,16 @@ app.get('/api/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
-// Маршрут для главной страницы
+
+// 7. МАРШРУТ ГЛАВНОЙ СТРАНИЦЫ (Для Render)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'main.html')); 
 });
 
-
-const PORT = process.env.PORT || 3000; // Берем порт от Render или 3000 для локалки
-
-
+// 8. ЗАПУСК
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(S`erver is running on port ${PORT}`);
-});
-app.post('/api/register', async (req, res) => {
-    try {
-        const { username, email, password } = req.body;
-
-        // 1. Проверка длины пароля
-        if (password.length < 8) {
-            return res.status(400).json({ error: "Пароль должен быть не менее 8 символов" });
-        }
-
-        // 2. Запрет на Admin и User (регистронезависимо)
-        const forbiddenWords = ['admin', 'user'];
-        const isForbidden = forbiddenWords.some(word => username.toLowerCase().includes(word));
-        
-        if (isForbidden) {
-            return res.status(400).json({ error: "Логин содержит запрещенные слова (Admin, User)" });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        db.run(
-            `INSERT INTO users (username, email, password) VALUES (?, ?, ?)`,
-            [username, email, hashedPassword],
-            function(err) {
-                if (err) return res.status(400).json({ error: "Имя уже занято" });
-                res.json({ success: true });
-            }
-        );
-    } catch (e) {
-        res.status(500).json({ error: "Ошибка сервера" });
-    }
+    console.log(`Server is running on port ${PORT}`);
 });
 
 
