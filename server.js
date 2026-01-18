@@ -75,8 +75,18 @@ app.get('/api/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
+// Маршрут для главной страницы
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'main.html')); 
+});
 
-app.listen(3000, () => console.log('Terminal: http://localhost:3000'));
+
+const PORT = process.env.PORT || 3000; // Берем порт от Render или 3000 для локалки
+
+
+app.listen(PORT, () => {
+    console.log(S`erver is running on port ${PORT}`);
+});
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
