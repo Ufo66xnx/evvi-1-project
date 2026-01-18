@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVVI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f2ff;
+            --neon-pink: #ff00e5;
+            --neon-green: #a3ff33;
+        }
+
+        body {
+            background: #050505;
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            color: white;
+        }
+
+        /* Контейнер для анимированных элементов */
+        #bg-animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Стили плавающих фигур */
+        .shape {
+            position: absolute;
+            border: 1px solid var(--neon-cyan);
+            opacity: 0.2;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Стеклянная панель */
+        .glass-panel {
+            background: rgba(10, 15, 25, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.4);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1), inset 0 0 15px rgba(0, 242, 255, 0.1);
+            z-index: 10;
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px var(--neon-cyan);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .cyber-input {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            color: white;
+        }
+
+        .cyber-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+            outline: none;
+        }
+
+        .neon-button {
+            background: var(--neon-green);
+            box-shadow: 0 0 20px rgba(163, 255, 51, 0.5);
+            transition: 0.3s;
+        }
+
+        .neon-button:hover {
+            box-shadow: 0 0 35px var(--neon-green);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center">
+
+    <div id="bg-animation-container"></div>
+
+    <div class="glass-panel w-full max-w-lg p-10 rounded-none relative">
+        <div class="absolute -top-1 -left-1 w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
+        <div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+
+        <h2 class="neon-text text-3xl text-center mb-10 tracking-[0.3em] uppercase">EVVI</h2>
+        
+        <form class="space-y-6">
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-cyan-400 mb-2">Логин</label>
+                <input type="text" placeholder="USERNAME" class="w-full cyber-input p-3 text-sm tracking-widest">
+            </div>
+            
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-cyan-400 mb-2">Пароль</label>
+                <input type="password" placeholder="PASSWORD" class="w-full cyber-input p-3 text-sm tracking-widest">
+            </div>
+
+            <button type="submit" class="neon-button w-full py-4 text-black font-bold uppercase tracking-widest mt-4">
+                Войти
+            </button>
+<div class="flex justify-between items-center mt-6 text-[10px] uppercase tracking-tighter">
+                <a href="#" class="text-pink-500 hover:text-pink-300 transition">Забыли пароль?</a>
+                <span class="text-gray-600 italic">2026</span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Генерация анимированных фигур на фоне
+        const container = document.getElementById('bg-animation-container');
+        const shapeCount = 15;
+
+        for (let i = 0; i < shapeCount; i++) {
+            const shape = document.createElement('div');
+            shape.classList.add('shape');
+            
+            // Рандомные размеры и позиции
+            const size = Math.random() * 150 + 50;
+            shape.style.width = ${size}px;
+            shape.style.height = ${size}px;
+            shape.style.left = ${Math.random() * 100}%;
+            
+            // Рандомная задержка и длительность анимации
+            shape.style.animationDuration = ${Math.random() * 10 + 10}s;
+            shape.style.animationDelay = ${Math.random() * 5}s;
+            
+            // Разные цвета для разнообразия (циановый и розовый)
+            if (Math.random() > 0.7) {
+                shape.style.borderColor = '#ff00e5';
+            }
+
+            container.appendChild(shape);
+        }
+    </script>
+</body>
+</html>

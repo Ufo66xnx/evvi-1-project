@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: radial-gradient(circle at center, #1a1a2e 0%, #000000 100%);
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden;
+        }
+
+        /* Эффект сетки на фоне */
+        .bg-grid {
+            background-image: image('img/auth.html');
+        }
+
+        /* Свечение для текста "AUTHORIZE" */
+        .neon-text {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(0, 242, 255, 0.5);
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Стеклянная панель */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 255, 0.1);
+            position: relative;
+        }
+
+        /* Декоративная рамка (внутренний бирюзовый контур) */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            inset: 10px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Стилизация полей ввода */
+        .cyber-input {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .cyber-input:focus {
+            border-color: #00f2ff;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+            outline: none;
+        }
+
+        /* Кнопка с ядовитым свечением */
+        .neon-button {
+            background: #a3ff33;
+            box-shadow: 0 0 15px rgba(163, 255, 51, 0.6);
+            color: #000;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+        .neon-button:hover {
+            box-shadow: 0 0 25px rgba(163, 255, 51, 0.9);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-grid">
+
+    <nav class="absolute top-8 w-full flex justify-center space-x-8 text-gray-400 uppercase tracking-widest text-xs">
+        <a href="main.html" class="hover:text-cyan-400 transition">Главная</a>
+        <a href="#" class="hover:text-cyan-400 transition">Бета-тест</a>
+        <a href="pricing.html" class="hover:text-cyan-400 transition">Продукты</a>
+        <a href="auth.html" class="hover:text-cyan-400 transition border border-cyan-400 px-3 py-1 -mt-1 rounded">Вход</a>
+        <a href="register.html" class="hover:text-cyan-400 transition">Регистрация</a>
+    </nav>
+
+    <div class="glass-panel w-full max-w-xl p-12 rounded-sm text-center">
+        <h2 class="neon-text text-4xl mb-10 tracking-[0.2em] text-white">Войти</h2>
+        
+        <form class="space-y-8 text-left max-w-md mx-auto">
+            <div class="flex items-center space-x-4">
+                <label class="w-1/3 text-gray-400 text-sm tracking-tighter uppercase font-bold">Username</label>
+                <input type="text" placeholder="Enter username..." class="w-2/3 cyber-input p-2 text-white text-sm">
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <label class="w-1/3 text-gray-400 text-sm tracking-tighter uppercase font-bold">Password</label>
+                <input type="password" placeholder="••••••••" class="w-2/3 cyber-input p-2 text-white text-sm">
+            </div>
+<div class="pt-4">
+                <button type="submit" class="neon-button w-full py-3 uppercase tracking-widest text-lg font-bold">
+                    Войти
+                </button>
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="#" class="text-pink-500 text-xs uppercase tracking-widest hover:text-pink-400 transition">
+                    Забыли пароль?
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="absolute top-10 left-10 w-20 h-20 border-t-2 border-l-2 border-cyan-500 opacity-30"></div>
+    <div class="absolute bottom-10 right-10 w-20 h-20 border-b-2 border-r-2 border-cyan-500 opacity-30"></div>
+<script>
+    const loginForm = document.querySelector('form');
+    
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Останавливаем обычную отправку формы
+
+        // Собираем данные из полей
+        const username = loginForm.querySelector('input[type="text"]').value;
+        const password = loginForm.querySelector('input[type="password"]').value;
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Если вход успешен, летим на главную
+                window.location.href = 'main.html';
+            } else {
+                // Если ошибка (неверный пароль и т.д.)
+                alert("ERROR: " + data.error);
+            }
+        } catch (err) {
+            alert("SYSTEM ERROR: Server is offline");
+        }
+    });
+</script>
+</body>
+</html>

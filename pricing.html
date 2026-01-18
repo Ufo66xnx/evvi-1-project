@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тарифы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-gold: #ffb300;
+            --neon-orange: #ff6d00;
+        }
+        body {
+            background: radial-gradient(circle at top, #1a1405 0%, #000000 100%);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+        .bg-grid {
+            background-image: image('src/auth.webp');
+        }
+        /* Карточка тарифа */
+        .price-card {
+            background: rgba(20, 15, 5, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 179, 0, 0.2);
+            position: relative;
+            transition: all 0.5s ease;
+        }
+        .price-card:hover {
+            border-color: var(--neon-gold);
+            box-shadow: 0 0 30px rgba(255, 179, 0, 0.2);
+            transform: translateY(-5px);
+        }
+        .price-card.premium {
+            border-color: var(--neon-orange);
+            box-shadow: 0 0 20px rgba(255, 109, 0, 0.1);
+        }
+        /* Шаблон под картинку */
+        .img-slot {
+            background: #0a0a0a;
+            border: 1px dashed rgba(255, 179, 0, 0.3);
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron';
+            font-size: 10px;
+            color: var(--neon-gold);
+            letter-spacing: 2px;
+        }
+        /* Поля ввода */
+        .contact-input {
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid rgba(255, 179, 0, 0.3);
+            transition: 0.3s;
+        }
+        .contact-input:focus {
+            border-color: var(--neon-gold);
+            outline: none;
+            background: rgba(255, 179, 0, 0.05);
+        }
+        .neon-btn-gold {
+            background: var(--neon-gold);
+            color: black;
+            font-weight: 800;
+            box-shadow: 0 0 15px rgba(255, 179, 0, 0.4);
+        }
+        .neon-btn-gold:hover {
+            box-shadow: 0 0 30px var(--neon-gold);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-grid min-h-screen">
+
+    <div class="p-6">
+        <a href="main.html" class="text-orange-500 hover:text-white uppercase text-xs tracking-[0.3em] transition">
+            &larr; В меню
+        </a>
+    </div>
+
+    <div class="container mx-auto px-4 py-12">
+        <h1 class="text-center text-5xl font-bold uppercase tracking-[0.4em] mb-16 font-[Orbitron] text-white" data-aos="fade-down">
+            Тарифные <span class="text-orange-500">планы</span>
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            
+            <div class="price-card p-8 rounded-lg" data-aos="fade-right" data-aos-delay="100">
+                <div class="img-slot mb-6 uppercase"><img src="pricing/basic.jpg" alt=""></div>
+                <h2 class="text-2xl font-bold font-[Orbitron] mb-2">BASIC</h2>
+                <p class="text-gray-500 text-sm mb-6">Стандартный протокол доступа для частных лиц.</p>
+                <div class="text-3xl font-bold text-orange-500 mb-6">$19<span class="text-xs text-gray-500">/mo</span></div>
+                <ul class="text-xs space-y-3 uppercase tracking-tighter text-gray-400">
+                    <li>• одно активное устройство</li>
+                    <li>• стандртный доступ</li>
+                    <li>• лимитное подключение</li>
+                </ul>
+            </div>
+<div class="price-card premium p-8 rounded-lg scale-105 z-10" data-aos="fade-up">
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-600 text-black text-[10px] px-4 py-1 font-bold uppercase tracking-widest">Recommended</div>
+                <div class="img-slot mb-6 uppercase border-orange-500/50"><img src="pricing/elite.jpg" alt=""></div>
+                <h2 class="text-2xl font-bold font-[Orbitron] mb-2 text-orange-400">ELITE</h2>
+                <p class="text-gray-400 text-sm mb-6">Расширенный пакет для профессиональных операторов.</p>
+                <div class="text-3xl font-bold text-orange-500 mb-6">$49<span class="text-xs text-gray-500">/mo</span></div>
+                <ul class="text-xs space-y-3 uppercase tracking-tighter text-orange-200">
+                    <li>• безлимитные сессии</li>
+                    <li>• работа с ИИ</li>
+                    <li>• приоритетное подключение</li>
+                    <li>• 24/7 тех поддержка</li>
+                </ul>
+            </div>
+
+            <div class="price-card p-8 rounded-lg" data-aos="fade-left" data-aos-delay="100">
+                <div class="img-slot mb-6 uppercase"><img src="pricing/corp.jpg" alt=""></div>
+                <h2 class="text-2xl font-bold font-[Orbitron] mb-2">CORP</h2>
+                <p class="text-gray-500 text-sm mb-6">Полный спектр инструментов для корпоративных сетей.</p>
+                <div class="text-3xl font-bold text-orange-500 mb-6">$199<span class="text-xs text-gray-500">/mo</span></div>
+                <ul class="text-xs space-y-3 uppercase tracking-tighter text-gray-400">
+                    <li>• глобальная инфрастуктура</li>
+                    <li>• полная защита</li>
+                    <li>• предзаказ на десктоп версию</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="max-w-2xl mx-auto glass-panel p-10 border border-orange-500/20 bg-black/40" data-aos="fade-up">
+            <h3 class="font-[Orbitron] text-xl mb-8 uppercase tracking-widest text-center">Остались вопросы?</h3>
+            <form class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="flex flex-col">
+                    <label class="text-[10px] uppercase text-orange-500 mb-1">Ваше имя</label>
+                    <input type="text" placeholder="Your Name" class="contact-input p-2 text-white text-sm">
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[10px] uppercase text-orange-500 mb-1">Ваш почтовый адрес</label>
+                    <input type="email" placeholder="Email@Network.com" class="contact-input p-2 text-white text-sm">
+                </div>
+                <div class="flex flex-col md:col-span-2">
+                    <label class="text-[10px] uppercase text-orange-500 mb-1">Текст письма</label>
+                    <textarea placeholder="Write your request..." rows="3" class="contact-input p-2 text-white text-sm resize-none"></textarea>
+                </div>
+                <button type="submit" class="md:col-span-2 neon-btn-gold py-4 uppercase tracking-[0.2em]">Отправить</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800 });
+    </script>
+</body>
+</html>
