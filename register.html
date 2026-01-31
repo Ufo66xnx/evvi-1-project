@@ -63,6 +63,29 @@
             color: #000;
             box-shadow: 0 0 25px rgba(255, 0, 229, 0.7);
         }
+        /* Основной контейнер */
+.container {
+    width: 90%;             /* Занимает почти всю ширину на мобилках */
+    max-width: 400px;       /* На компьютерах не раздувается */
+    margin: 20px auto;
+    padding: 20px;
+    box-sizing: border-box; /* Чтобы паддинги не ломали ширину */
+}
+
+/* Поля ввода */
+input {
+    width: 100%;
+    font-size: 16px;        /* Важно: если меньше 16px, iPhone будет "зумить" экран при вводе */
+    padding: 12px;
+    margin: 10px 0;
+}
+
+/* Кнопки */
+button {
+    width: 100%;
+    min-height: 48px;       /* Стандарт Apple/Google для нажатия пальцем */
+    cursor: pointer;
+}
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center bg-grid">
