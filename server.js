@@ -20,15 +20,17 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 const transporter = nodemailer.createTransport({
     host: 'smtp.yandex.ru',
     port: 465,
-    secure: true, // Для порта 465 всегда true
+    secure: true, 
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
+    // Добавляем эти настройки, чтобы "протолкнуть" запрос
     tls: {
-        // Это поможет избежать таймаутов на Render
         rejectUnauthorized: false
-    }
+    },
+    pool: true, // Использование пула соединений помогает на медленных сетях
+    rateLimit: 1
 });
 
 // 3. MIDDLEWARE
