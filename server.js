@@ -18,13 +18,17 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 // 2. НАСТРОЙКИ ПОЧТЫ
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Используем встроенную настройку сервиса
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // Для 587 всегда false
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
     tls: {
-        rejectUnauthorized: false
+        // Принудительно разрешаем слабые протоколы, чтобы пробиться через фильтры
+        rejectUnauthorized: false,
+        minVersion: "TLSv1"
     }
 });
 // 3. MIDDLEWARE
