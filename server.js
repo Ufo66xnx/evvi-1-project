@@ -18,14 +18,15 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 // 2. НАСТРОЙКИ ПОЧТЫ
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Используем встроенную настройку сервиса
+    host: 'smtp.yandex.ru',
+    port: 465,
+    secure: true, // Для порта 465 всегда true
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    debug: true, // Включает детальный вывод в логи
-    logger: true, // Выводит каждый шаг SMTP-команд в консоль Render
     tls: {
+        // Это поможет избежать таймаутов на Render
         rejectUnauthorized: false
     }
 });
