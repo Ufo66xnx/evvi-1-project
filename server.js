@@ -99,43 +99,42 @@ app.post('/api/login', async (req, res) => {
 
 // Запрос ссылки
 app.post('/api/forgot-password', async (req, res) => {
-    try {
-        const { email } = req.body;
-        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const { email } = req.body;
+    console.log("ПОПЫТКА СБРОСА ДЛЯ:", email);
 
-        const { data, error } = await supabase
+    try {
+        const token = Math.random().toString(36).substring(2, 15);
+
+        // 1. Обновление базы
+        const { data, error: dbError } = await supabase
             .from('users')
             .update({ reset_token: token })
             .eq('email', email)
             .select();
 
-        if (error || !data || data.length === 0) {
-            return res.status(404).json({ error: "Email не найден в базе" });
-        }
+        if (dbError) throw new Error("DB_ERROR: " + dbError.message);
+        if (!data || data.length === 0) return res.status(404).json({ error: "EMAIL_NOT_FOUND" });
 
-        // Авто-определение URL сайта
-        const host = process.env.SITE_URL || `https://${req.get('host')}`;
-        const resetLink = `${host}/reset-password.html?token=${token}`;
+        console.log("БАЗА ОБНОВЛЕНА, ТОКЕН:", token);
 
-        const mailOptions = {
-            from: `"CyberNet Support" <${process.env.EMAIL_USER}>`,
+        // 2. Отправка почты (используем промис вместо колбэка)
+        const resetLink = `${process.env.SITE_URL}/reset-password.html?token=${token}`;
+        
+        await transporter.sendMail({
+            from: `"EVVI Support" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: 'Восстановление доступа | CyberNet',
-            html: `
-                <div style="background:#050a10; color:#0ac2fa; padding:30px; border:2px solid #0ac2fa; font-family:sans-serif;">
-                    <h2 style="text-align:center;">RECOVERY SYSTEM</h2>
-                    <p>Для сброса пароля перейдите по ссылке:</p>
-                    <a href="${resetLink}" style="color:#0ac2fa; font-weight:bold;">${resetLink}</a>
-                    <p style="margin-top:20px; font-size:10px; color:#555;">Если вы не запрашивали сброс, игнорируйте это письмо.</p>
-                </div>`
-        };
-
-        transporter.sendMail(mailOptions, (err) => {
-            if (err) return res.status(500).json({ error: "Ошибка почты" });
-            res.json({ message: "Письмо отправлено!" });
+            subject: 'Восстановление пароля',
+            html: `Ссылка для сброса: <a href="${resetLink}">${resetLink}</a>`
         });
-    } catch (e) {
-        res.status(500).json({ error: "SERVER_ERROR" });
+
+        console.log("ПИСЬМО ОТПРАВЛЕНО УСПЕШНО");
+        res.json({ success: true, message: "Инструкция отправлена!" });
+
+    } catch (error) {
+        // ЛЮБАЯ ошибка теперь ТОЧНО попадет в логи
+        console.error("КРИТИЧЕСКАЯ ОШИБКА В API:");
+        console.error(error.message); 
+        res.status(500).json({ error: error.message });
     }
 });
 
