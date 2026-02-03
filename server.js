@@ -18,10 +18,16 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 
 // 2. НАСТРОЙКИ ПОЧТЫ
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true, // Используем SSL
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        // Игнорируем ошибки сертификатов (часто нужно для облачных хостингов)
+        rejectUnauthorized: false
     }
 });
 
