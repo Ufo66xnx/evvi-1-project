@@ -134,18 +134,17 @@ app.post('/api/forgot-password', async (req, res) => {
 });
 
 // Сохранение нового пароля
-app.post('/api/reset-password', async (req, res) => {
+app.post('/api/forgot-password', async (req, res) => {
+    console.log(">>> [LOG]: Получен запрос на сброс для:", req.body.email);
+    
     try {
         const { email } = req.body;
-        console.log("--- СИСТЕМА: ЗАПРОС ДЛЯ", email, "---");
-
-        if (!email) {
-            return res.status(400).json({ error: "Email не указан" });
-        }
+        if (!email) return res.status(400).json({ error: "Email не указан" });
 
         const token = Math.random().toString(36).substring(2, 15);
 
-        // 1. Пробуем обновить базу
+        // 1. Пробуем обновить Supabase
+        console.log(">>> [LOG]: Обновляю токен в Supabase...");
         const { data, error: dbError } = await supabase
             .from('users')
             .update({ reset_token: token })
@@ -153,41 +152,46 @@ app.post('/api/reset-password', async (req, res) => {
             .select();
 
         if (dbError) {
-            console.error("--- ОШИБКА SUPABASE ---", dbError.message);
+            console.error(">>> [ERR] Ошибка Supabase:", dbError.message);
             return res.status(500).json({ error: "Ошибка БД: " + dbError.message });
         }
 
         if (!data || data.length === 0) {
-            console.log("--- СИСТЕМА: EMAIL НЕ НАЙДЕН ---");
-            return res.status(404).json({ error: "Пользователь с таким Email не найден" });
+            console.warn(">>> [WARN]: Email не найден в базе данных");
+            return res.status(404).json({ error: "Пользователь не найден" });
         }
 
-        // 2. Формируем ссылку
-        const host = process.env.SITE_URL || `https://${req.get('host')}`;
-        const resetLink = `${host}/reset-password.html?token=${token}`;
+        // 2. Настройка ссылки (SITE_URL из Render или авто-определение)
+        const baseUrl = process.env.SITE_URL ? process.env.SITE_URL.replace(/\/$/, "") : `https://${req.get('host')}`;
+        const resetLink = `${baseUrl}/reset-password.html?token=${token}`;
+        console.log(">>> [LOG]: Ссылка сформирована:", resetLink);
 
-        // 3. Отправляем почту
+        // 3. Отправка почты
         const mailOptions = {
             from: `"CyberNet Support" <${process.env.EMAIL_USER}>`,
             to: email,
-            subject: 'Восстановление доступа',
-            text: `Для сброса пароля перейдите по ссылке: ${resetLink}`,
-            html: `<b>Сброс пароля:</b> <a href="${resetLink}">Нажмите здесь</a>`
+            subject: 'CyberNet | Восстановление доступа',
+            html: `
+                <div style="background:#000; color:#0ac2fa; padding:20px; border:1px solid #0ac2fa;">
+                    <h2>СБРОС ПАРОЛЯ</h2>
+                    <p>Для установки нового пароля нажмите на ссылку:</p>
+                    <a href="${resetLink}" style="color:#fff;">${resetLink}</a>
+                </div>`
         };
 
+        console.log(">>> [LOG]: Начинаю отправку через Nodemailer...");
         transporter.sendMail(mailOptions, (mailErr, info) => {
             if (mailErr) {
-                console.error("--- ОШИБКА NODEMAILER ---", mailErr.message);
-                // ОЧЕНЬ ВАЖНО: отвечаем клиенту, чтобы он не висел в Pending
+                console.error(">>> [ERR] Ошибка Nodemailer:", mailErr.message);
                 return res.status(500).json({ error: "Ошибка почты: " + mailErr.message });
             }
-            console.log("--- СИСТЕМА: ПИСЬМО УШЛО ---", info.response);
-            return res.json({ message: "Инструкция отправлена на почту!" });
+            console.log(">>> [LOG]: Письмо успешно ушло!", info.response);
+            return res.json({ message: "Инструкция отправлена на Email" });
         });
 
     } catch (err) {
-        console.error("--- КРИТИЧЕСКИЙ СБОЙ ОБРАБОТЧИКА ---", err);
-        return res.status(500).json({ error: "Внутренняя ошибка сервера" });
+        console.error(">>> [CRITICAL]:", err);
+        return res.status(500).json({ error: "Критический сбой сервера" });
     }
 });
 
