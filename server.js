@@ -19,18 +19,34 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 // 2. НАСТРОЙКИ ПОЧТЫ
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
+<<<<<<< HEAD
     port: 587,
     secure: false, // Для 587 всегда false
+=======
+    port: 465,
+    secure: true, // Обязательно true для 465
+>>>>>>> 8a351ea3d5eda3b52cb292b5dc8f25d58b7ef74c
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
+    debug: true, // Включает детальный вывод в логи
+    logger: true, // Выводит каждый шаг SMTP-команд в консоль Render
     tls: {
+<<<<<<< HEAD
         // Принудительно разрешаем слабые протоколы, чтобы пробиться через фильтры
         rejectUnauthorized: false,
         minVersion: "TLSv1"
     }
+=======
+        rejectUnauthorized: false
+    },
+    connectionTimeout: 20000, // Увеличиваем до 20 секунд
+    greetingTimeout: 20000,
+    socketTimeout: 20000
+>>>>>>> 8a351ea3d5eda3b52cb292b5dc8f25d58b7ef74c
 });
+
 // 3. MIDDLEWARE
 app.use(compression());
 app.use(express.json());
