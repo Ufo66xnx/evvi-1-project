@@ -169,7 +169,7 @@ app.get('/api/logout', (req, res) => {
 // 5. РОУТИНГ (ВАЖНО)
 // Если запрошен путь, которого нет в API — отдаем index.html или auth.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'auth.html'));
+    res.sendFile(path.join(__dirname, 'main.html'));
 });
 
 // 6. ЗАПУСК
