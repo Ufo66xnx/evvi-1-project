@@ -136,22 +136,58 @@ app.post('/api/forgot-password', async (req, res) => {
 // Сохранение нового пароля
 app.post('/api/reset-password', async (req, res) => {
     try {
-        const { token, newPassword } = req.body;
-        if (!token || !newPassword) return res.status(400).json({ error: "INVALID_DATA" });
+        const { email } = req.body;
+        console.log("--- СИСТЕМА: ЗАПРОС ДЛЯ", email, "---");
 
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-        const { data, error } = await supabase
+        if (!email) {
+            return res.status(400).json({ error: "Email не указан" });
+        }
+
+        const token = Math.random().toString(36).substring(2, 15);
+
+        // 1. Пробуем обновить базу
+        const { data, error: dbError } = await supabase
             .from('users')
-            .update({ password: hashedPassword, reset_token: null })
-            .eq('reset_token', token)
+            .update({ reset_token: token })
+            .eq('email', email)
             .select();
 
-        if (error || !data || data.length === 0) {
-            return res.status(400).json({ error: "Ссылка недействительна или устарела" });
+        if (dbError) {
+            console.error("--- ОШИБКА SUPABASE ---", dbError.message);
+            return res.status(500).json({ error: "Ошибка БД: " + dbError.message });
         }
-        res.json({ message: "Пароль успешно изменен!" });
-    } catch (e) {
-        res.status(500).json({ error: "SERVER_ERROR" });
+
+        if (!data || data.length === 0) {
+            console.log("--- СИСТЕМА: EMAIL НЕ НАЙДЕН ---");
+            return res.status(404).json({ error: "Пользователь с таким Email не найден" });
+        }
+
+        // 2. Формируем ссылку
+        const host = process.env.SITE_URL || `https://${req.get('host')}`;
+        const resetLink = `${host}/reset-password.html?token=${token}`;
+
+        // 3. Отправляем почту
+        const mailOptions = {
+            from: `"CyberNet Support" <${process.env.EMAIL_USER}>`,
+            to: email,
+            subject: 'Восстановление доступа',
+            text: `Для сброса пароля перейдите по ссылке: ${resetLink}`,
+            html: `<b>Сброс пароля:</b> <a href="${resetLink}">Нажмите здесь</a>`
+        };
+
+        transporter.sendMail(mailOptions, (mailErr, info) => {
+            if (mailErr) {
+                console.error("--- ОШИБКА NODEMAILER ---", mailErr.message);
+                // ОЧЕНЬ ВАЖНО: отвечаем клиенту, чтобы он не висел в Pending
+                return res.status(500).json({ error: "Ошибка почты: " + mailErr.message });
+            }
+            console.log("--- СИСТЕМА: ПИСЬМО УШЛО ---", info.response);
+            return res.json({ message: "Инструкция отправлена на почту!" });
+        });
+
+    } catch (err) {
+        console.error("--- КРИТИЧЕСКИЙ СБОЙ ОБРАБОТЧИКА ---", err);
+        return res.status(500).json({ error: "Внутренняя ошибка сервера" });
     }
 });
 
